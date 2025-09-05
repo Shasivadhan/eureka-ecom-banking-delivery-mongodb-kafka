@@ -1,79 +1,58 @@
 version: '3.8'
 
 services:
+  # The Eureka Discovery Server for service registration
   eureka-server:
-    build: ./eureka-server
+    # Builds the Docker image from the Dockerfile in the './eureka-server' directory.
+    # Adjust this path to match your project's directory structure.
+    build:
+      context: ./eureka-server
+    image: simapp/eureka-server
+    container_name: eureka-server
     ports:
       - "8761:8761"
-    depends_on:
-      - mongodb
-    networks:
-      - app-net
 
-  ecommerce:
-    build: ./ecommerce
+  # The Ecommerce microservice
+  ecommerce-api:
+    # Builds the Docker image from the Dockerfile in the './ecommerce-api' directory.
+    # Adjust this path to match your project's directory structure.
+    build:
+      context: ./ecommerce-api
+    image: simapp/ecommerce-api
+    container_name: ecommerce-api
     ports:
       - "8081:8081"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      # Links the service to Eureka. The hostname 'eureka-server' is the service name defined above.
+      EUREKA_URI: http://eureka-server:8761/eureka
+    # Ensures the Eureka server is running before this service starts.
     depends_on:
       - eureka-server
-      - mongodb
-      - kafka
-    networks:
-      - app-net
 
-  banking:
-    build: ./banking
+  # The Banking microservice
+  banking-api:
+    # Builds the Docker image from the Dockerfile in the './banking-api' directory.
+    build:
+      context: ./banking-api
+    image: simapp/banking-api
+    container_name: banking-api
     ports:
       - "8082:8082"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      EUREKA_URI: http://eureka-server:8761/eureka
     depends_on:
       - eureka-server
-      - mongodb
-    networks:
-      - app-net
 
-  delivery:
-    build: ./delivery
+  # The Delivery microservice
+  delivery-api:
+    # Builds the Docker image from the Dockerfile in the './delivery-api' directory.
+    build:
+      context: ./delivery-api
+    image: simapp/delivery-api
+    container_name: delivery-api
     ports:
       - "8083:8083"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      EUREKA_URI: http://eureka-server:8761/eureka
     depends_on:
       - eureka-server
-      - kafka
-      - mongodb
-    networks:
-      - app-net
-
-  mongodb:
-    image: mongo:6
-    ports:
-      - "27017:27017"
-    networks:
-      - app-net
-
-  zookeeper:
-    image: wurstmeister/zookeeper:3.4.6
-    ports:
-      - "2181:2181"
-    networks:
-      - app-net
-
-  kafka:
-    image: wurstmeister/kafka:2.12-2.2.1
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_ADVERTISED_HOST_NAME: kafka
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-    depends_on:
-      - zookeeper
-    networks:
-      - app-net
-
-networks:
-  app-net:
-    driver: bridge
