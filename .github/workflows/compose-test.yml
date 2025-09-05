@@ -31,8 +31,8 @@ jobs:
         run: |
           mvn -B -f eureka-server/pom.xml clean package -DskipTests
           mvn -B -f ecommerce/pom.xml clean package -DskipTests
-          mvn -B -f banking/pom.xml clean package -DskipTests
-          mvn -B -f delivery/pom.xml clean package -DskipTests
+          mvn -B -f banking-service/pom.xml clean package -DskipTests
+          mvn -B -f delivery-service/pom.xml clean package -DskipTests
 
       - name: Start services with Docker Compose
         run: |
