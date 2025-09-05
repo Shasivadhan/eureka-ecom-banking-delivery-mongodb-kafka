@@ -1,58 +1,38 @@
-version: '3.8'
-
 services:
-  # The Eureka Discovery Server for service registration
   eureka-server:
-    # Builds the Docker image from the Dockerfile in the './eureka-server' directory.
-    # Adjust this path to match your project's directory structure.
     build:
       context: ./eureka-server
-    image: simapp/eureka-server
+      dockerfile: Dockerfile
     container_name: eureka-server
     ports:
       - "8761:8761"
 
-  # The Ecommerce microservice
   ecommerce-api:
-    # Builds the Docker image from the Dockerfile in the './ecommerce-api' directory.
-    # Adjust this path to match your project's directory structure.
     build:
       context: ./ecommerce-api
-    image: simapp/ecommerce-api
+      dockerfile: Dockerfile
     container_name: ecommerce-api
     ports:
       - "8081:8081"
-    environment:
-      # Links the service to Eureka. The hostname 'eureka-server' is the service name defined above.
-      EUREKA_URI: http://eureka-server:8761/eureka
-    # Ensures the Eureka server is running before this service starts.
     depends_on:
       - eureka-server
 
-  # The Banking microservice
   banking-api:
-    # Builds the Docker image from the Dockerfile in the './banking-api' directory.
     build:
       context: ./banking-api
-    image: simapp/banking-api
+      dockerfile: Dockerfile
     container_name: banking-api
     ports:
       - "8082:8082"
-    environment:
-      EUREKA_URI: http://eureka-server:8761/eureka
     depends_on:
       - eureka-server
 
-  # The Delivery microservice
   delivery-api:
-    # Builds the Docker image from the Dockerfile in the './delivery-api' directory.
     build:
       context: ./delivery-api
-    image: simapp/delivery-api
+      dockerfile: Dockerfile
     container_name: delivery-api
     ports:
       - "8083:8083"
-    environment:
-      EUREKA_URI: http://eureka-server:8761/eureka
     depends_on:
       - eureka-server
