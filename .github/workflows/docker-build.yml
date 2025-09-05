@@ -27,9 +27,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # 🚀 This builds ALL modules using the root pom.xml
       - name: Build all microservices
-        run: mvn -B clean package -DskipTests
+        run: mvn -B -f pom.xml clean package -DskipTests
 
       - name: Start services with Docker Compose
         run: |
