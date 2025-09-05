@@ -9,11 +9,6 @@ jobs:
   integration-test:
     runs-on: ubuntu-latest
 
-    services:
-      docker:
-        image: docker:26.1.3-dind
-        privileged: true
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,7 +50,7 @@ jobs:
             sleep 5
           done
           echo "❌ Eureka did not start in time"
-          docker logs $(docker ps -q)
+          docker compose logs
           exit 1
 
       - name: Run API smoke tests
